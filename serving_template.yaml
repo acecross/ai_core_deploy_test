@@ -1,0 +1,22 @@
+apiVersion: ai.sap.com/v1alpha1
+kind: ServingTemplate
+metadata:
+  name: abap-rag-server
+  annotations:
+    scenarios.ai.sap.com/name: abap-rag
+    executables.ai.sap.com/name: rag-fastapi
+spec:
+  template:
+    spec:
+      imagePullSecrets:
+        - name: ghcr
+      containers:
+        - name: api
+          image: ghcr.io/placeholder/abap-rag:0.0.0   # overridden via parameterBindings
+          ports: [{ containerPort: 8080 }]
+          env:
+            - { name: LLM_PROVIDER, value: aicore }
+            - { name: LLM_MODEL,    value: gpt-4o-mini }
+          readinessProbe: { httpGet: { path: /healthz, port: 8080 }, initialDelaySeconds: 5 }
+          livenessProbe:  { httpGet: { path: /healthz, port: 8080 }, initialDelaySeconds: 15 }
+  resources: { minReplicas: 1, maxReplicas: 2 }
