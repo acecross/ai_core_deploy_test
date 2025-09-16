@@ -6,7 +6,7 @@ metadata:
     scenarios.ai.sap.com/name: abap-rag
     executables.ai.sap.com/name: rag-fastapi
   labels:
-    ai.sap.com/version: "1.0.0"        # required
+    ai.sap.com/version: "1.0.0"   # required
 spec:
   inputs:
     parameters:
@@ -16,25 +16,24 @@ spec:
         type: string
         default: "8080"
 
-  # Entire KServe spec as a single YAML string
-  template: |
-    apiVersion: serving.kserve.io/v1beta1
-    kind: InferenceService
+  # NOTE: template is an OBJECT; only the inner .spec is a string
+  template:
+    apiVersion: "serving.kserve.io/v1beta1"
     metadata:
       name: "{{ name }}"
-      labels:
+      labels: |
         ai.sap.com/resourcePlan: infer.s
-    spec:
+    spec: |
       predictor:
-        # Remove this block if your image is PUBLIC
+        # keep if your image is PRIVATE and secret name is 'ghcr'
         imagePullSecrets:
           - name: ghcr
         containers:
-          - name: kserve-container            # <- required name
+          - name: kserve-container
             image: "{{inputs.parameters.image}}"
             ports:
               - containerPort: {{inputs.parameters.port}}
-                protocol: TCP                  # <- required protocol
+                protocol: TCP
             env:
               - name: PORT
                 value: "{{inputs.parameters.port}}"
