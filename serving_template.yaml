@@ -23,7 +23,7 @@ spec:
       name: "{{ name }}"
       labels: |
         ai.sap.com/resourcePlan: infer.s
-    spec: |
+    spec:
       predictor:
         # keep if your image is PRIVATE and secret name is 'ghcr'
         imagePullSecrets:
