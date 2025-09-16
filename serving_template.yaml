@@ -8,7 +8,6 @@ metadata:
   labels:
     ai.sap.com/version: "1.0.0"        # required
 spec:
-  # Parameters that your script binds via parameterBindings
   inputs:
     parameters:
       - name: image
@@ -17,7 +16,7 @@ spec:
         type: string
         default: "8080"
 
-  # IMPORTANT: the InferenceService must be one YAML block as a string
+  # Entire KServe spec as a single YAML string
   template: |
     apiVersion: serving.kserve.io/v1beta1
     kind: InferenceService
@@ -31,10 +30,11 @@ spec:
         imagePullSecrets:
           - name: ghcr
         containers:
-          - name: api
+          - name: kserve-container            # <- required name
             image: "{{inputs.parameters.image}}"
             ports:
               - containerPort: {{inputs.parameters.port}}
+                protocol: TCP                  # <- required protocol
             env:
               - name: PORT
                 value: "{{inputs.parameters.port}}"
