@@ -12,16 +12,19 @@ spec:
     port:
       type: string
       default: "8080"
-  template:
-    apiVersion: "serving.kserve.io/v1beta1"
+
+  # IMPORTANT: the KServe spec must be a single multiline string
+  template: |
+    apiVersion: serving.kserve.io/v1beta1
+    kind: InferenceService
     metadata:
       name: "{{ name }}"
-      labels: |
+      labels:
         ai.sap.com/resourcePlan: infer.s
-    spec: |
+    spec:
       predictor:
         imagePullSecrets:
-          - name: ghcr             # remove this block if your image is public
+          - name: ghcr         # remove this block if your image is public
         containers:
           - name: api
             image: "{{ image }}"
@@ -46,6 +49,7 @@ spec:
                 port: {{ port }}
               initialDelaySeconds: 15
               periodSeconds: 10
+
   resources:
     minReplicas: 1
     maxReplicas: 2
