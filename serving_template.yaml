@@ -1,53 +1,62 @@
 apiVersion: ai.sap.com/v1alpha1
 kind: ServingTemplate
 metadata:
-  name: text-clf-infer-tutorial
+  name: abap-rag-server-v2                    # change if you want to reuse old name
   annotations:
-    scenarios.ai.sap.com/description: "SAP developers tutorial scenario"
-    scenarios.ai.sap.com/name: "text-clf-tutorial-scenario"
-    executables.ai.sap.com/description: "Inference executable for text classification with Scikit-learn"
-    executables.ai.sap.com/name: "text-clf-infer-tutorial-exec"
-    artifacts.ai.sap.com/textmodel.kind: "model"
-    artifacts.ai.sap.com/textmodel.description: "artifact description"
-    artifacts.ai.sap.com/textmodel.labels: | 
-        {"ext.ai.sap.com/customkey1":"customvalue1", "ext.ai.sap.com/customkey2":"customvalue2"}
+    scenarios.ai.sap.com/name: abap-rag
+    executables.ai.sap.com/name: rag-fastapi
   labels:
-    ai.sap.com/version: 0.1.0
-    scenarios.ai.sap.com/id: "text-clf-tutorial" 
+    ai.sap.com/version: "1.0.2"
+    scenarios.ai.sap.com/id: "abap-rag"
 spec:
   inputs:
     parameters:
-      - name: modelName
-        default: value
-        type: string
-        description: description of the parameter
       - name: image
-        default: default-image-value
         type: string
-        description: description of the parameter
-    artifacts:
-      - name: textmodel 
+      - name: port
+        type: string
+        default: "8080"
   template:
     apiVersion: "serving.kserve.io/v1beta1"
     metadata:
+      name: "{{ name }}"
       annotations: |
         autoscaling.knative.dev/metric: rps
         autoscaling.knative.dev/target: 100
         autoscaling.knative.dev/targetBurstCapacity: 70
       labels: |
-        ai.sap.com/resourcePlan: starter
+        ai.sap.com/resourcePlan: infer.s
     spec: |
       predictor:
         imagePullSecrets:
-          - name: <Name of your Docker registry secret>
-        minReplicas: 0
-        maxReplicas: 5
+          - name: ghcr                       # keep for private GHCR; remove if public
+        minReplicas: 1
+        maxReplicas: 2
         containers:
-        - name: kserve-container
-          image: {{inputs.parameters.image}}
-          ports:
-          - containerPort: 9001
-            protocol: TCP
-          env:
-          - name: STORAGE_URI
-            value: "{{inputs.artifacts.textmodel}}"
+          - name: kserve-container           # required by validator
+            image: "{{inputs.parameters.image}}"
+            ports:
+              - containerPort: {{inputs.parameters.port}}
+                protocol: TCP
+            env:
+              - name: PORT
+                value: "{{inputs.parameters.port}}"
+              - name: LLM_PROVIDER
+                value: "aicore"
+              - name: LLM_MODEL
+                value: "gpt-4o-mini"
+            readinessProbe:
+              httpGet:
+                path: /healthz
+                port: {{inputs.parameters.port}}
+              initialDelaySeconds: 5
+              periodSeconds: 5
+            livenessProbe:
+              httpGet:
+                path: /healthz
+                port: {{inputs.parameters.port}}
+              initialDelaySeconds: 15
+              periodSeconds: 10
+  resources:
+    minReplicas: 1
+    maxReplicas: 2
