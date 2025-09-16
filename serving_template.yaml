@@ -6,17 +6,38 @@ metadata:
     scenarios.ai.sap.com/name: abap-rag
     executables.ai.sap.com/name: rag-fastapi
 spec:
+  inputs:
+    - name: image
+      type: string
+    - name: port
+      type: string
   template:
-    spec:
-      imagePullSecrets:
-        - name: ghcr
-      containers:
-        - name: api
-          image: ghcr.io/placeholder/abap-rag:0.0.0   # overridden via parameterBindings
-          ports: [{ containerPort: 8080 }]
-          env:
-            - { name: LLM_PROVIDER, value: aicore }
-            - { name: LLM_MODEL,    value: gpt-4o-mini }
-          readinessProbe: { httpGet: { path: /healthz, port: 8080 }, initialDelaySeconds: 5 }
-          livenessProbe:  { httpGet: { path: /healthz, port: 8080 }, initialDelaySeconds: 15 }
-  resources: { minReplicas: 1, maxReplicas: 2 }
+    apiVersion: "serving.kserve.io/v1beta1"
+    metadata:
+      name: "{{ name }}"
+      labels: |
+        ai.sap.com/resourcePlan: infer.s
+    spec: |
+      predictor:
+        imagePullSecrets:
+          - name: ghcr            # remove this block if your image is public
+        containers:
+          - name: api
+            image: "{{ image }}"
+            ports:
+              - containerPort: {{ port }}
+            env:
+              - name: LLM_PROVIDER
+                value: "aicore"
+              - name: LLM_MODEL
+                value: "gpt-4o-mini"
+              - name: PORT
+                value: "{{ port }}"
+            readinessProbe:
+              httpGet: { path: /healthz, port: {{ port }} }
+              initialDelaySeconds: 5
+              periodSeconds: 5
+            livenessProbe:
+              httpGet: { path: /healthz, port: {{ port }} }
+              initialDelaySeconds: 15
+              periodSeconds: 10
