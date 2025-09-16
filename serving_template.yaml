@@ -6,8 +6,9 @@ metadata:
     scenarios.ai.sap.com/name: abap-rag
     executables.ai.sap.com/name: rag-fastapi
   labels:
-    ai.sap.com/version: "1.0.0"   # required
+    ai.sap.com/version: "1.0.0"        # required
 spec:
+  # Parameters that your script binds via parameterBindings
   inputs:
     parameters:
       - name: image
@@ -16,20 +17,21 @@ spec:
         type: string
         default: "8080"
 
-  # NOTE: template is an OBJECT; only the inner .spec is a string
-  template:
-    apiVersion: "serving.kserve.io/v1beta1"
+  # IMPORTANT: the InferenceService must be one YAML block as a string
+  template: |
+    apiVersion: serving.kserve.io/v1beta1
+    kind: InferenceService
     metadata:
       name: "{{ name }}"
-      labels: |
+      labels:
         ai.sap.com/resourcePlan: infer.s
     spec:
       predictor:
-        # keep if your image is PRIVATE and secret name is 'ghcr'
+        # Remove this block if your image is PUBLIC
         imagePullSecrets:
           - name: ghcr
         containers:
-          - name: kserve-container
+          - name: kserve-container 
             image: "{{inputs.parameters.image}}"
             ports:
               - containerPort: {{inputs.parameters.port}}
