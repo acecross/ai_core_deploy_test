@@ -5,34 +5,35 @@ metadata:
   annotations:
     scenarios.ai.sap.com/name: abap-rag
     executables.ai.sap.com/name: rag-fastapi
+  labels:
+    ai.sap.com/version: "1.0.0"         # <-- required
+    scenarios.ai.sap.com/id: "abap-rag" # optional but useful
 spec:
   inputs:
-    image:
-      type: string
-    port:
-      type: string
-      default: "8080"
+    parameters:
+      - name: image
+        type: string
+      - name: port
+        type: string
+        default: "8080"
 
-  # IMPORTANT: the KServe spec must be a single multiline string
-  template: |
-    apiVersion: serving.kserve.io/v1beta1
-    kind: InferenceService
+  template:
+    apiVersion: "serving.kserve.io/v1beta1"
     metadata:
-      name: "{{ name }}"
-      labels:
+      labels: |
         ai.sap.com/resourcePlan: infer.s
-    spec:
+    spec: |
       predictor:
         imagePullSecrets:
-          - name: ghcr         # remove this block if your image is public
+          - name: ghcr            # remove if your image is public
         containers:
           - name: api
-            image: "{{ image }}"
+            image: "{{inputs.parameters.image}}"
             ports:
-              - containerPort: {{ port }}
+              - containerPort: {{inputs.parameters.port}}
             env:
               - name: PORT
-                value: "{{ port }}"
+                value: "{{inputs.parameters.port}}"
               - name: LLM_PROVIDER
                 value: "aicore"
               - name: LLM_MODEL
@@ -40,13 +41,13 @@ spec:
             readinessProbe:
               httpGet:
                 path: /healthz
-                port: {{ port }}
+                port: {{inputs.parameters.port}}
               initialDelaySeconds: 5
               periodSeconds: 5
             livenessProbe:
               httpGet:
                 path: /healthz
-                port: {{ port }}
+                port: {{inputs.parameters.port}}
               initialDelaySeconds: 15
               periodSeconds: 10
 
