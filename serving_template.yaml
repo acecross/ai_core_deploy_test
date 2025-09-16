@@ -24,36 +24,7 @@ spec:
       name: "{{ name }}"
       labels: |
         ai.sap.com/resourcePlan: infer.s
-    spec: |
-      predictor:
-        # keep if your image is PRIVATE and secret name is 'ghcr'
-        imagePullSecrets:
-          - name: ghcr
-        containers:
-          - name: kserve-container
-            image: "{{inputs.parameters.image}}"
-            ports:
-              - containerPort: {{inputs.parameters.port}}
-                protocol: TCP
-            env:
-              - name: PORT
-                value: "{{inputs.parameters.port}}"
-              - name: LLM_PROVIDER
-                value: "aicore"
-              - name: LLM_MODEL
-                value: "gpt-4o-mini"
-            readinessProbe:
-              httpGet:
-                path: /healthz
-                port: {{inputs.parameters.port}}
-              initialDelaySeconds: 5
-              periodSeconds: 5
-            livenessProbe:
-              httpGet:
-                path: /healthz
-                port: {{inputs.parameters.port}}
-              initialDelaySeconds: 15
-              periodSeconds: 10
+
 
   resources:
     minReplicas: 1
