@@ -28,7 +28,7 @@ spec:
         ai.sap.com/resourcePlan: infer.s
     spec: |
       predictor:
-        imagePullSecrets:
+        imagePullSecrets: 
           - name: ghcr                       # keep for private GHCR; remove if public
         minReplicas: 1
         maxReplicas: 2
