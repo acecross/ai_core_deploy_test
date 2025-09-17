@@ -28,26 +28,34 @@ spec:
         ai.sap.com/resourcePlan: infer.s
     spec: |
       predictor:
-        imagePullSecrets: 
-          - name: ghcr        
+        imagePullSecrets:
+        - name: ghcr
         containers:
-          - name: kserve-container
-            image: ghcr.io/acecross/abap-rag:0.2
-            ports:
-              - containerPort: 80
-                protocol: TCP
-            readinessProbe:
-              httpGet:
-                path: / 
-                port: 80
-              initialDelaySeconds: 5
-              periodSeconds: 5
-            livenessProbe:
-              httpGet:
-                path: /
-                port: 80
-              initialDelaySeconds: 15
-              periodSeconds: 10
+        - name: kserve-container
+          image: ghcr.io/acecross/abap-rag:0.2
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          env:
+          - name: PORT
+            value: "80"          # env values must be strings
+          - name: LLM_PROVIDER
+            value: "aicore"
+          - name: LLM_MODEL
+            value: "gpt-4o-mini"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80           # numeric fields stay ints
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
   resources:
     minReplicas: 1
     maxReplicas: 2
