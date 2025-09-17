@@ -54,7 +54,7 @@ spec:
             livenessProbe:
               httpGet:
                 path: /
-                port: {{inputs.parameters.port}}
+                port: {{inputs.parameters.port}} 
               initialDelaySeconds: 15
               periodSeconds: 10
   resources:
