@@ -39,7 +39,7 @@ spec:
               - containerPort: {{inputs.parameters.port}}
                 protocol: TCP
             env:
-              - name: PORT
+              - name: PORT 
                 value: "{{inputs.parameters.port}}"
               - name: LLM_PROVIDER
                 value: "aicore"
