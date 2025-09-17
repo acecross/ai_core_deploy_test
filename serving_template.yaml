@@ -36,11 +36,11 @@ spec:
           - name: kserve-container           # required by validator
             image: "{{inputs.parameters.image}}"
             ports:
-              - containerPort: {{inputs.parameters.port}}
+              - containerPort: {{inputs.parameters.port | int}}
                 protocol: TCP
             env:
               - name: PORT
-                value: "{{inputs.parameters.port}}"
+                value: "{{inputs.parameters.port | int}}"
               - name: LLM_PROVIDER
                 value: "aicore"
               - name: LLM_MODEL
@@ -48,13 +48,13 @@ spec:
             readinessProbe:
               httpGet:
                 path: /healthz
-                port: {{inputs.parameters.port}}
+                port: {{inputs.parameters.port | int}}
               initialDelaySeconds: 5
               periodSeconds: 5
             livenessProbe:
               httpGet:
                 path: /healthz
-                port: {{inputs.parameters.port}}
+                port: {{inputs.parameters.port | int}}
               initialDelaySeconds: 15
               periodSeconds: 10
   resources:
