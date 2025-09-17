@@ -16,45 +16,39 @@ spec:
       - name: port
         type: string
         default: "8080"
-  template:
-    apiVersion: "serving.kserve.io/v1beta1"
-    metadata:
-      name: "{{ name }}"
-      annotations: |
-        autoscaling.knative.dev/metric: rps
-        autoscaling.knative.dev/target: 100
-        autoscaling.knative.dev/targetBurstCapacity: 70
-      labels: |
-        ai.sap.com/resourcePlan: infer.s
-    spec: |
-      predictor:
-        imagePullSecrets:
-        - name: ghcr
-        containers:
-        - name: kserve-container
-          image: ghcr.io/acecross/abap-rag:0.2
-          ports:
-          - containerPort: 80
-            protocol: TCP
-          env:
-          - name: PORT
-            value: "80"          # env values must be strings
-          - name: LLM_PROVIDER
-            value: "aicore"
-          - name: LLM_MODEL
-            value: "gpt-4o-mini"
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80           # numeric fields stay ints
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 15
-            periodSeconds: 10
+template:
+  apiVersion: "serving.kserve.io/v1beta1"
+  metadata:
+    labels: |
+      ai.sap.com/resourcePlan: infer.s   # <-- set to a valid plan in your tenant
+  spec: |
+    predictor:
+      # imagePullSecrets: []            # keep empty for public image
+      containers:
+      - name: kserve-container
+        image: "nginxinc/nginx-unprivileged:stable-alpine"  # runs as non-root, default 8080
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+        env:
+        - name: PORT
+          value: "8080"                 # env is string
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080                  # numeric
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+
 
   resources:
     minReplicas: 1
