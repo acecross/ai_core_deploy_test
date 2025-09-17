@@ -34,7 +34,7 @@ spec:
         maxReplicas: 2
         containers:
           - name: kserve-container           # required by validator
-            image: "ghcr.io/acecross/abap-rag:0.2"
+            image: ghcr.io/acecross/abap-rag:0.2
             ports:
               - containerPort: 80
                 protocol: TCP
