@@ -30,8 +30,6 @@ spec:
       predictor:
         imagePullSecrets: 
           - name: ghcr        
-        minReplicas: 1
-        maxReplicas: 2
         containers:
           - name: kserve-container
             image: ghcr.io/acecross/abap-rag:0.2
