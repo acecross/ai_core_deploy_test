@@ -34,13 +34,13 @@ spec:
         maxReplicas: 2
         containers:
           - name: kserve-container           # required by validator
-            image: "{{inputs.parameters.image}}"
+            image: "ghcr.io/acecross/abap-rag:0.2"
             ports:
-              - containerPort: {{inputs.parameters.port}}
+              - containerPort: 80
                 protocol: TCP
             env:
               - name: PORT 
-                value: "{{inputs.parameters.port}}"
+                value: 80
               - name: LLM_PROVIDER
                 value: "aicore"
               - name: LLM_MODEL
@@ -48,13 +48,13 @@ spec:
             readinessProbe:
               httpGet:
                 path: / 
-                port: {{inputs.parameters.port}}
+                port: 80
               initialDelaySeconds: 5
               periodSeconds: 5
             livenessProbe:
               httpGet:
                 path: /
-                port: {{inputs.parameters.port}} 
+                port: 80
               initialDelaySeconds: 15
               periodSeconds: 10
   resources:
