@@ -36,13 +36,6 @@ spec:
             ports:
               - containerPort: 80
                 protocol: TCP
-            env:
-              - name: PORT 
-                value: 80
-              - name: LLM_PROVIDER
-                value: "aicore"
-              - name: LLM_MODEL
-                value: "gpt-4o-mini"
             readinessProbe:
               httpGet:
                 path: / 
