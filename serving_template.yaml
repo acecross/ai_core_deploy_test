@@ -47,13 +47,13 @@ spec:
                 value: "gpt-4o-mini"
             readinessProbe:
               httpGet:
-                path: /healthz
+                path: /
                 port: {{inputs.parameters.port | int}}
               initialDelaySeconds: 5
               periodSeconds: 5
             livenessProbe:
               httpGet:
-                path: /healthz
+                path: /
                 port: {{inputs.parameters.port | int}}
               initialDelaySeconds: 15
               periodSeconds: 10
