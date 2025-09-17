@@ -47,7 +47,7 @@ spec:
                 value: "gpt-4o-mini"
             readinessProbe:
               httpGet:
-                path: /
+                path: / 
                 port: {{inputs.parameters.port}}
               initialDelaySeconds: 5
               periodSeconds: 5
