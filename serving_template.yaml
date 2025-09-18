@@ -23,10 +23,9 @@ spec:
         ai.sap.com/resourcePlan: infer.s   # <-- set to a valid plan in your tenant
     spec: |
       predictor:
-        # imagePullSecrets: []            # keep empty for public image
         containers:
         - name: kserve-container
-          image: "nginxinc/nginx-unprivileged:stable-alpine"  # runs as non-root, default 8080
+          image: abap-rag:0.2     # runs as non-root, default 8080
           ports:
           - containerPort: 8080
             protocol: TCP
@@ -35,11 +34,25 @@ spec:
             allowPrivilegeEscalation: false
           env:
           - name: PORT
-            value: "8080"                 # env is string
+            value: "8080"
+          - name: LLM_PROVIDER
+            value: "aicore"
+          - name: LLM_MODEL
+            value: "gpt-4o-mini"
+          - name: AICORE_AUTH_URL
+            value: "${AICORE_AUTH_URL}"
+          - name: AICORE_CLIENT_ID
+            value: "${AICORE_CLIENT_ID}"
+          - name: AICORE_CLIENT_SECRET
+            value: "${AICORE_CLIENT_SECRET}"
+          - name: AICORE_RESOURCE_GROUP
+            value: "${AICORE_RESOURCE_GROUP}"
+          - name: AICORE_BASE_URL
+            value: "${AICORE_BASE_URL}"
           readinessProbe:
             httpGet:
               path: /
-              port: 8080                  # numeric
+              port: 8080
             initialDelaySeconds: 3
             periodSeconds: 5
           livenessProbe:
