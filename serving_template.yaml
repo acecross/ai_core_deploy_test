@@ -35,7 +35,7 @@ spec:
       predictor:
         containers:
         - name: kserve-container
-          image: abap-rag:0.2     # runs as non-root, default 8080
+          image: ghcr.io/acecross/abap-rag:0.2    # runs as non-root, default 8080
           ports:
           - containerPort: 8080
             protocol: TCP
