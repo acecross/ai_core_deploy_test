@@ -40,15 +40,15 @@ spec:
           - name: LLM_MODEL
             value: "gpt-4o-mini"
           - name: AICORE_AUTH_URL
-            value: "${AICORE_AUTH_URL}"
+            value: "{{inputs.parameters.AICORE_AUTH_URL}}"
           - name: AICORE_CLIENT_ID
-            value: "${AICORE_CLIENT_ID}"
+            value: "{{inputs.parameters.AICORE_CLIENT_ID}}"
           - name: AICORE_CLIENT_SECRET
-            value: "${AICORE_CLIENT_SECRET}"
+            value: "{{inputs.parameters.AICORE_CLIENT_SECRET}}"
           - name: AICORE_RESOURCE_GROUP
-            value: "${AICORE_RESOURCE_GROUP}"
+            value: "{{inputs.parameters.AICORE_RESOURCE_GROUP}}"
           - name: AICORE_BASE_URL
-            value: "${AICORE_BASE_URL}"
+            value: "{{inputs.parameters.AICORE_BASE_URL}}"
           readinessProbe:
             httpGet:
               path: /
