@@ -33,6 +33,8 @@ spec:
         ai.sap.com/resourcePlan: infer.s   # <-- set to a valid plan in your tenant
     spec: |
       predictor:
+        imagePullSecrets:
+        - name: ghcr-registry
         containers:
         - name: kserve-container
           image: ghcr.io/acecross/abap-rag:0.2    # runs as non-root, default 8080
