@@ -16,6 +16,16 @@ spec:
       - name: port
         type: string
         default: "8080"
+      - name: AICORE_AUTH_URL
+        type: string
+      - name: AICORE_CLIENT_ID
+        type: string
+      - name: AICORE_CLIENT_SECRET
+        type: string
+      - name: AICORE_RESOURCE_GROUP
+        type: string
+      - name: AICORE_BASE_URL
+        type: string
   template:
     apiVersion: "serving.kserve.io/v1beta1"
     metadata:
