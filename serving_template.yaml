@@ -30,7 +30,7 @@ spec:
     apiVersion: "serving.kserve.io/v1beta1"
     metadata:
       labels: |
-        ai.sap.com/resourcePlan: basic
+        ai.sap.com/resourcePlan: Extended
     spec: |
       predictor:
         containers:
