@@ -1,8 +1,31 @@
 apiVersion: ai.sap.com/v1alpha1
 kind: ServingTemplate
 metadata:
-  name: abap-rag-minimal
+  name: abap-rag-server-v3 
+  annotations:
+    scenarios.ai.sap.com/name: abap-rag
+    executables.ai.sap.com/name: rag-fastapi
+  labels:
+    ai.sap.com/version: "1.0.3"
+    scenarios.ai.sap.com/id: "abap-rag"
 spec:
+  inputs:
+    parameters:
+      - name: image
+        type: string
+      - name: port
+        type: string
+        default: "8080"
+      - name: AICORE_AUTH_URL
+        type: string
+      - name: AICORE_CLIENT_ID
+        type: string
+      - name: AICORE_CLIENT_SECRET
+        type: string
+      - name: AICORE_RESOURCE_GROUP
+        type: string
+      - name: AICORE_BASE_URL
+        type: string
   template:
     apiVersion: "serving.kserve.io/v1beta1"
     metadata:
@@ -15,3 +38,41 @@ spec:
           image: docker.io/acecross/abap-rag:0.2
           ports:
           - containerPort: 8080
+            protocol: TCP
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          env:
+          - name: PORT
+            value: "8080"
+          - name: LLM_PROVIDER
+            value: "aicore"
+          - name: LLM_MODEL
+            value: "gpt-4o-mini"
+          - name: AICORE_AUTH_URL
+            value: "{{inputs.parameters.AICORE_AUTH_URL}}"
+          - name: AICORE_CLIENT_ID
+            value: "{{inputs.parameters.AICORE_CLIENT_ID}}"
+          - name: AICORE_CLIENT_SECRET
+            value: "{{inputs.parameters.AICORE_CLIENT_SECRET}}"
+          - name: AICORE_RESOURCE_GROUP
+            value: "{{inputs.parameters.AICORE_RESOURCE_GROUP}}"
+          - name: AICORE_BASE_URL
+            value: "{{inputs.parameters.AICORE_BASE_URL}}"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+
+  resources:
+    minReplicas: 1
+    maxReplicas: 2
