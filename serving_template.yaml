@@ -1,7 +1,7 @@
 apiVersion: ai.sap.com/v1alpha1
 kind: ServingTemplate
 metadata:
-  name: abap-rag-server-v3 
+  name: abap-rag-server-v2 
   annotations:
     scenarios.ai.sap.com/name: abap-rag
     executables.ai.sap.com/name: rag-fastapi
