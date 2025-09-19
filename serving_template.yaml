@@ -6,7 +6,7 @@ metadata:
     scenarios.ai.sap.com/name: abap-rag
     executables.ai.sap.com/name: rag-fastapi
   labels:
-    ai.sap.com/version: "1.0.2"
+    ai.sap.com/version: "1.0.3"
     scenarios.ai.sap.com/id: "abap-rag"
 spec:
   inputs:
@@ -33,9 +33,11 @@ spec:
         ai.sap.com/resourcePlan: infer.s
     spec: |
       predictor:
+        imagePullSecrets:
+         - name: docker-registry
         containers:
         - name: kserve-container
-          image: ghcr.io/acecross/abap-rag:0.2
+          image: docker.io/acecross/abap-rag:0.2
           ports:
           - containerPort: 8080
             protocol: TCP
